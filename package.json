@@ -6,13 +6,14 @@
   "author": "Try Ajitiono <ballinst@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "generate:css": "tailwindcss -i ./tailwind.css -o ./src/css/tailwind.css",
-    "purge:css": "NODE_ENV=production tailwindcss -i ./src/css/tailwind.css -o ./dist/css/tailwind.css",
+    "css:generate": "tailwindcss -i ./tailwind.css -o ./src/css/tailwind.css",
+    "css:build": "NODE_ENV=production tailwindcss -i ./src/css/tailwind.css -o ./dist/css/tailwind.css",
     "prettify": "prettier --write css index.html postcss.config.js tailwind.config.js"
   },
   "devDependencies": {
     "autoprefixer": "10.4.0",
     "chokidar": "3.5.2",
+    "execa": "5.1.1",
     "postcss": "8.3.11",
     "prettier": "2.4.1",
     "serve-handler": "6.1.3",

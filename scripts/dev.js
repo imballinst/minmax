@@ -2,10 +2,12 @@ const chokidar = require('chokidar');
 const path = require('path');
 const io = require('socket.io');
 const http = require('http');
+const execa = require('execa');
 const fs = require('fs/promises');
 const handler = require('serve-handler');
 
 // Constants.
+const ROOT_FOLDER = path.join(__dirname, '../');
 const SRC_FOLDER = path.join(__dirname, '../src');
 const NODE_MODULES_FOLDER = path.join(__dirname, '../node_modules');
 
@@ -36,10 +38,19 @@ server.listen(3000, async () => {
 
 const socket = new io.Server(server);
 
-chokidar.watch(SRC_FOLDER).on('change', () => {
-  socket.sockets.emit('reload');
-  console.info('[server] Refreshing browser due to file change.');
-});
+chokidar
+  .watch(SRC_FOLDER, {
+    ignored: [`${SRC_FOLDER}/css/tailwind.css`]
+  })
+  .on('change', async (path) => {
+    console.info(`[server] Refreshing browser due to file change: ${path}.`);
+
+    // Here, we always regenerate the CSS but since it's very quick (<150ms), I think
+    // it should be fine. We can improve it later.
+    await execa.command('yarn css:generate', { cwd: ROOT_FOLDER });
+
+    socket.sockets.emit('reload');
+  });
 
 // Helper functions.
 async function doesFileExist(path) {
