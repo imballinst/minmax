@@ -1,17 +1,25 @@
 {
   "name": "minmax",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@github.com:imballinst/minmax.git",
+  "author": "Try Ajitiono <ballinst@gmail.com>",
+  "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
-  },
-  "dependencies": {
-    "preact": "^10.5.13"
+    "generate:css": "tailwindcss -i ./tailwind.css -o ./src/css/tailwind.css",
+    "purge:css": "NODE_ENV=production tailwindcss -i ./src/css/tailwind.css -o ./dist/css/tailwind.css",
+    "prettify": "prettier --write css index.html postcss.config.js tailwind.config.js"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.0.0",
-    "typescript": "^4.3.2",
-    "vite": "^2.6.4"
+    "autoprefixer": "10.4.0",
+    "chokidar": "3.5.2",
+    "postcss": "8.3.11",
+    "prettier": "2.4.1",
+    "serve-handler": "6.1.3",
+    "socket.io": "4.3.2"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "0.3.4",
+    "tailwindcss": "2.2.19"
   }
 }
