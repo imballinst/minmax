@@ -108,6 +108,7 @@
                     border-gray-300
                   "
                   placeholder="40000"
+                  autocomplete="off"
                 />
               </div>
               <p
@@ -141,6 +142,7 @@
                   "
                   maxlength="3"
                   placeholder="30"
+                  autocomplete="off"
                 />
               </div>
               <p
@@ -183,6 +185,7 @@
                     border-gray-300
                   "
                   placeholder="25000"
+                  autocomplete="off"
                 />
               </div>
               <p
@@ -220,32 +223,35 @@
 
       <div
         id="result"
-        class="space-y-6 mt-8 sm:w-full md:w-1/2 lg:1/3"
+        class="space-y-6 mt-8 sm:w-full md:w-1/2 lg:w-1/3 hidden"
         role="region"
         aria-live="polite"
       >
         <h2 class="font-bold text-2xl mb-4 text-center">Diskon Optimal</h2>
 
         <div id="result-optimal" class="flex flex-col">
-          <p>
+          <p class="text-center">
             Pengeluaran dengan kisaran
             <span class="font-medium" id="result-optimal-start"></span> hingga
             <span class="font-medium" id="result-optimal-end"></span>.
           </p>
 
-          <table>
-            <thead>
+          <table class="divide-y divide-gray-200 mt-4">
+            <thead class="bg-gray-50">
               <tr>
-                <th>Harga Awal</th>
-                <th>Diskon</th>
-                <th>Harga Akhir</th>
+                <th class="text-right">Harga Awal</th>
+                <th class="text-right">Diskon</th>
+                <th class="text-right">Harga Akhir</th>
               </tr>
             </thead>
-            <tbody id="result-optimal-table-body"></tbody>
+            <tbody
+              id="result-optimal-table-body"
+              class="divide-y divide-gray-200"
+            ></tbody>
           </table>
         </div>
 
-        <p id="result-suboptimal">
+        <p id="result-suboptimal" class="text-center">
           Diskon yang ditawarkan kurang optimal, karena seharusnya diskon
           sebesar
           <span class="font-medium" id="result-suboptimal-value"></span> bisa
@@ -375,59 +381,60 @@
         // Modify DOM.
         resultSuboptimalValueDiv.innerHTML = discountValueWithMinimumExpense;
         resultSuboptimalExpenseDiv.innerHTML = minimumExpense;
+      } else {
+        // Maximum discount.
+        const optimalExpense = Math.floor(
+          (maximumDiscountValue * 100) / percentage
+        );
 
-        return;
-      }
+        // Add ranges for in-betweens.
+        const rows = [];
+        let iteratedExpense = minimumExpense;
 
-      // Maximum discount.
-      const optimalExpense = Math.floor(
-        (maximumDiscountValue * 100) / percentage
-      );
+        while (iteratedExpense <= optimalExpense) {
+          const discountValue = getDiscount(iteratedExpense, percentage);
+          const netValue = Math.floor(iteratedExpense - discountValue);
 
-      // Add ranges for in-betweens.
-      const rows = [];
-      let iteratedExpense = minimumExpense;
+          rows.push([iteratedExpense, discountValue, netValue]);
 
-      while (iteratedExpense <= optimalExpense) {
-        const discountValue = getDiscount(iteratedExpense, percentage);
-        const netValue = Math.floor(iteratedExpense - discountValue);
-
-        rows.push([iteratedExpense, discountValue, netValue]);
-
-        if (
-          iteratedExpense + 10000 > optimalExpense &&
-          iteratedExpense !== optimalExpense
-        ) {
-          // Override on maximum.
-          iteratedExpense = optimalExpense;
-        } else {
-          iteratedExpense += 10000;
+          if (
+            iteratedExpense + 10000 > optimalExpense &&
+            iteratedExpense !== optimalExpense
+          ) {
+            // Override on maximum.
+            iteratedExpense = optimalExpense;
+          } else {
+            iteratedExpense += 10000;
+          }
         }
-      }
 
-      // Modify DOM.
-      resultOptimalDiv.classList.remove('hidden');
-      resultSuboptimalDiv.classList.add('hidden');
+        // Modify DOM.
+        resultOptimalDiv.classList.remove('hidden');
+        resultSuboptimalDiv.classList.add('hidden');
+
+        resultDiv.classList.remove('hidden');
+        resultRangeStartDiv.innerHTML = `Rp.${minimumExpense}`;
+        resultRangeEndDiv.innerHTML = `Rp.${optimalExpense}`;
+
+        const newTableBody = document.createElement('tbody');
+
+        for (const row of rows) {
+          const newTableRow = document.createElement('tr');
+
+          for (const col of row) {
+            const newTableCol = document.createElement('td');
+            newTableCol.innerHTML = col;
+            newTableCol.classList.add('text-right');
+
+            newTableRow.appendChild(newTableCol);
+          }
+
+          newTableBody.appendChild(newTableRow);
+        }
+        resultTableBody.innerHTML = newTableBody.innerHTML;
+      }
 
       resultDiv.classList.remove('hidden');
-      resultRangeStartDiv.innerHTML = `Rp.${minimumExpense}`;
-      resultRangeEndDiv.innerHTML = `Rp.${optimalExpense}`;
-
-      const newTableBody = document.createElement('tbody');
-
-      for (const row of rows) {
-        const newTableRow = document.createElement('tr');
-
-        for (const col of row) {
-          const newTableCol = document.createElement('td');
-          newTableCol.innerHTML = col;
-
-          newTableRow.appendChild(newTableCol);
-        }
-
-        newTableBody.appendChild(newTableRow);
-      }
-      resultTableBody.innerHTML = newTableBody.innerHTML;
     });
 
     // Helper functions.
@@ -438,7 +445,7 @@
     function validateEmptinessAndNumbers(stringInput, additionalChecks) {
       const number = Number(stringInput);
       const isEmpty = stringInput === '';
-      const isInvalid = isNaN(number) || number === 0;
+      const isInvalid = isNaN(number) || number <= 0;
 
       if (isInvalid || isEmpty) {
         return isEmpty ? 'Input tidak boleh kosong.' : 'Input tidak valid.';

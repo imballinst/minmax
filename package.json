@@ -6,6 +6,7 @@
   "author": "Try Ajitiono <ballinst@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "dev": "node scripts/dev.js",
     "css:generate": "tailwindcss -i ./tailwind.css -o ./src/css/tailwind.css",
     "css:build": "NODE_ENV=production tailwindcss -i ./src/css/tailwind.css -o ./dist/css/tailwind.css",
     "prettify": "prettier --write css index.html postcss.config.js tailwind.config.js"
