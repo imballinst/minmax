@@ -9,10 +9,16 @@ const PATH_TO_DIST_INDEX_HTML = `${DIST_FOLDER}/index.html`;
 // Copy all stuff in `src` folder, except `src/dev`.
 // Later, the `dist/css/tailwind.css` will be replaced with the purged version, too.
 async function main() {
+  // Cleanup.
   if (await doesPathExist(DIST_FOLDER)) {
     await fs.rm(DIST_FOLDER, { recursive: true });
   } else {
     await fs.mkdir(DIST_FOLDER);
+  }
+
+  // If Tailwind CSS raw file doesn't exist, generate it.
+  if (!(await doesPathExist(`${SRC_FOLDER}/css/tailwind.css`))) {
+    await execa.command('yarn css:generate', { cwd: ROOT_FOLDER });
   }
 
   await fs.copy(SRC_FOLDER, DIST_FOLDER, {
