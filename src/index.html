@@ -237,7 +237,7 @@
         role="region"
         aria-live="polite"
       >
-        <h2 class="font-bold text-2xl mb-4 text-center">Diskon Optimal</h2>
+        <h2 class="font-bold text-2xl mb-4 text-center" id="result-title"></h2>
 
         <div id="result-optimal" class="flex flex-col">
           <p class="text-center">
@@ -335,6 +335,7 @@
 
     // For showing results.
     const resultDiv = document.getElementById('result');
+    const resultTitleHeading = document.getElementById('result-title');
 
     const resultOptimalDiv = document.getElementById('result-optimal');
     const resultRangeStartDiv = document.getElementById('result-optimal-start');
@@ -406,6 +407,7 @@
         // Modify DOM.
         resultSuboptimalValueDiv.innerHTML = discountValueWithMinimumExpense;
         resultSuboptimalExpenseDiv.innerHTML = minimumExpense;
+        resultTitleHeading.innerHTML = 'Diskon Kurang Optimal';
       } else {
         // Maximum discount.
         const optimalExpense = Math.floor(
@@ -440,6 +442,7 @@
         resultDiv.classList.remove('hidden');
         resultRangeStartDiv.innerHTML = `Rp.${minimumExpense}`;
         resultRangeEndDiv.innerHTML = `Rp.${optimalExpense}`;
+        resultTitleHeading.innerHTML = 'Diskon Optimal';
 
         const newTableBody = document.createElement('tbody');
 
