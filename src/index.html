@@ -63,12 +63,16 @@
       body {
         font-family: 'Bitter', serif;
       }
+
+      table > tbody > tr > td {
+        font-family: 'Courier New', Courier, monospace;
+      }
     </style>
 
     <title>MinMax Discount</title>
   </head>
-  <body class="sm:py-4 md:py-8">
-    <div class="flex flex-col items-center">
+  <body class="sm:pt-4 md:pt-8 min-h-screen flex flex-col">
+    <div class="flex flex-col items-center flex-grow">
       <header class="sm:w-full md:w-1/2 lg:w-1/2 text-center mb-8">
         <h1 class="font-bold text-4xl">MinMax Discount</h1>
         <p class="font-medium">
@@ -113,7 +117,6 @@
                     border-gray-300
                   "
                   placeholder="40000"
-                  autocomplete="off"
                 />
               </div>
               <p
@@ -147,7 +150,6 @@
                   "
                   maxlength="3"
                   placeholder="30"
-                  autocomplete="off"
                 />
               </div>
               <p
@@ -190,7 +192,6 @@
                     border-gray-300
                   "
                   placeholder="25000"
-                  autocomplete="off"
                 />
               </div>
               <p
@@ -241,7 +242,7 @@
             <span class="font-medium" id="result-optimal-end"></span>.
           </p>
 
-          <table class="divide-y divide-gray-200 mt-4">
+          <table class="divide-y divide-gray-200 mt-4 text-sm">
             <thead class="bg-gray-50">
               <tr>
                 <th class="text-right">Harga Awal (Rp)</th>
@@ -265,6 +266,10 @@
         </p>
       </div>
     </div>
+
+    <footer class="flex text-gray-500 p-2 mt-8 justify-center">
+      Copyright &copy; 2021 Try Ajitiono
+    </footer>
   </body>
 
   <script>
@@ -428,7 +433,7 @@
 
           for (const col of row) {
             const newTableCol = document.createElement('td');
-            newTableCol.innerHTML = col;
+            newTableCol.innerHTML = addNumberSeparator(col);
             newTableCol.classList.add('text-right');
 
             newTableRow.appendChild(newTableCol);
@@ -461,6 +466,22 @@
       }
 
       return undefined;
+    }
+
+    function addNumberSeparator(str) {
+      const characters = str.toString().split('').reverse();
+      const length = characters.length;
+      let result = '';
+
+      for (let i = 0; i < length; i++) {
+        if (i > 0 && i % 3 === 0) {
+          result = `.${result}`;
+        }
+
+        result = `${characters[i]}${result}`;
+      }
+
+      return result;
     }
   </script>
 
