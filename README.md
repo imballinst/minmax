@@ -46,11 +46,10 @@ yarn
 yarn css:generate
 # Run the server, which opens on port 3000.
 yarn dev
-``
+```
 
 Then, go to http://localhost:3000 to see the UI. You can update the functionality right away in the [`index.html`](src/index.html)
 
 ## License
 
 MIT
-```
