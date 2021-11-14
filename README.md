@@ -48,7 +48,7 @@ yarn css:generate
 yarn dev
 ```
 
-Then, go to http://localhost:3000 to see the UI. You can update the functionality right away in the [`index.html`](src/index.html)
+Then, go to http://localhost:3000 to see the UI. You can update the functionality right away in the [`index.html`](src/index.html).
 
 ## License
 
