@@ -3,6 +3,7 @@ const execa = require('execa');
 
 const { ROOT_FOLDER, SRC_FOLDER, DIST_FOLDER } = require('./constants');
 const { doesPathExist } = require('./common/exists');
+const gtag = require('./injects/gtag');
 
 const PATH_TO_DIST_INDEX_HTML = `${DIST_FOLDER}/index.html`;
 
@@ -35,12 +36,13 @@ async function main() {
   // Remove the dev scripts from index.html.
   const content = await fs.readFile(PATH_TO_DIST_INDEX_HTML, 'utf-8');
   const contentArray = content.split('\n');
-  const cleanedHtmlArray = [];
+  let cleanedHtmlArray = [];
   let isLineIncluded = true;
 
   for (const line of contentArray) {
     const trimmed = line.trim();
 
+    // Remove some sets of lines.
     if (trimmed.startsWith('<!-- [remove-on-prod:start')) {
       isLineIncluded = false;
     }
@@ -52,6 +54,14 @@ async function main() {
     if (trimmed.startsWith('<!-- [remove-on-prod:finish')) {
       isLineIncluded = true;
     }
+  }
+
+  // If process.env.CONTEXT === 'production', inject scripts.
+  if (process.env.CONTEXT === 'production') {
+    cleanedHtmlArray = cleanedHtmlArray
+      .slice(0, -2)
+      .concat(gtag)
+      .concat(cleanedHtmlArray.slice(-2));
   }
 
   await fs.writeFile(PATH_TO_DIST_INDEX_HTML, cleanedHtmlArray.join('\n'));
