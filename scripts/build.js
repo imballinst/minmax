@@ -1,7 +1,12 @@
 const fs = require('fs-extra');
 const execa = require('execa');
 
-const { ROOT_FOLDER, SRC_FOLDER, DIST_FOLDER } = require('./constants');
+const {
+  ROOT_FOLDER,
+  SRC_FOLDER,
+  DIST_FOLDER,
+  NODE_MODULES_FOLDER
+} = require('./constants');
 const { doesPathExist } = require('./common/exists');
 const gtag = require('./injects/gtag');
 
@@ -25,13 +30,27 @@ async function main() {
   await fs.copy(SRC_FOLDER, DIST_FOLDER, {
     recursive: true,
     filter: (src) => {
-      // Exclude `src/dev` folder.
-      return !src.startsWith(`${ROOT_FOLDER}/src/dev`);
+      // Exclude `src/dev` and `src/css` folder.
+      return (
+        !src.startsWith(`${ROOT_FOLDER}/src/dev`) &&
+        !src.startsWith(`${ROOT_FOLDER}/src/css`)
+      );
     }
   });
 
   // Generate the minified Tailwind CSS.
-  await execa.command('yarn css:build', { cwd: ROOT_FOLDER });
+  const stamp = new Date().valueOf();
+  const mainCssFilename = `main-${stamp}.css`;
+
+  await execa.command(
+    `yarn tailwindcss -i ./src/css/tailwind.css -o ./dist/css/${mainCssFilename} --minify`,
+    {
+      cwd: ROOT_FOLDER,
+      env: {
+        NODE_ENV: 'production'
+      }
+    }
+  );
 
   // Remove the dev scripts from index.html.
   const content = await fs.readFile(PATH_TO_DIST_INDEX_HTML, 'utf-8');
@@ -64,7 +83,10 @@ async function main() {
       .concat(cleanedHtmlArray.slice(-2));
   }
 
-  await fs.writeFile(PATH_TO_DIST_INDEX_HTML, cleanedHtmlArray.join('\n'));
+  await fs.writeFile(
+    PATH_TO_DIST_INDEX_HTML,
+    cleanedHtmlArray.join('\n').replace('tailwind.css', mainCssFilename)
+  );
 }
 
 main();

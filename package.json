@@ -9,7 +9,7 @@
     "dev": "node scripts/dev.js",
     "build": "node scripts/build.js",
     "css:generate": "tailwindcss -i ./tailwind.css -o ./src/css/tailwind.css",
-    "css:build": "NODE_ENV=production tailwindcss -i ./dist/css/tailwind.css -o ./dist/css/tailwind.css --minify",
+    "css:build": "NODE_ENV=production tailwindcss -i ./dist/css/tailwind.css -o ./dist/css/main.css --minify",
     "prettify": "prettier --write css index.html postcss.config.js tailwind.config.js"
   },
   "devDependencies": {
