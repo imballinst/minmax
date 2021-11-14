@@ -1,0 +1,4 @@
+# This folder contains all files that are needed for dev, so that
+# index.html can import (because it can't import outside of the defined `public` folder).
+*
+!.gitignore

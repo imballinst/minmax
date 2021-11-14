@@ -3,13 +3,11 @@ const path = require('path');
 const io = require('socket.io');
 const http = require('http');
 const execa = require('execa');
-const fs = require('fs/promises');
+const fs = require('fs-extra');
 const handler = require('serve-handler');
 
-// Constants.
-const ROOT_FOLDER = path.join(__dirname, '../');
-const SRC_FOLDER = path.join(__dirname, '../src');
-const NODE_MODULES_FOLDER = path.join(__dirname, '../node_modules');
+const { ROOT_FOLDER, SRC_FOLDER, NODE_MODULES_FOLDER } = require('./constants');
+const { doesPathExist } = require('./common/exists');
 
 // Watch for file changes, then ask browser to reload.
 const server = http.createServer((request, response) => {
@@ -27,10 +25,10 @@ const PATH_TO_SOCKET_CLIENT_SOURCE = path.join(
 const PATH_TO_SOCKET_IO_DEV = path.join(SRC_FOLDER, 'dev/socket.io.js');
 
 server.listen(3000, async () => {
-  const isSocketIoClientCopied = await doesFileExist(PATH_TO_SOCKET_IO_DEV);
+  const isSocketIoClientCopied = await doesPathExist(PATH_TO_SOCKET_IO_DEV);
 
   if (!isSocketIoClientCopied) {
-    await fs.copyFile(PATH_TO_SOCKET_CLIENT_SOURCE, PATH_TO_SOCKET_IO_DEV);
+    await fs.copy(PATH_TO_SOCKET_CLIENT_SOURCE, PATH_TO_SOCKET_IO_DEV);
   }
 
   console.info('[server] Running at http://localhost:3000.');
@@ -51,14 +49,3 @@ chokidar
 
     socket.sockets.emit('reload');
   });
-
-// Helper functions.
-async function doesFileExist(path) {
-  try {
-    await fs.access(path, fs.F_OK);
-    return true;
-  } catch (err) {
-    // It always throws an error when it doesn't exist.
-    return false;
-  }
-}
